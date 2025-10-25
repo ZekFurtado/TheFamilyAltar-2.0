@@ -1,0 +1,154 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:thefamilyaltar/core/errors/exceptions.dart';
+
+import '../models/local_user_model.dart';
+
+abstract class AuthRemoteDataSource {
+  /// The execution is in the data layer and this method is responsible for
+  /// making the API call to Firebase for signing the user in to the app.
+  Future<LocalUserModel> emailSignIn(
+      {required String email, required String password});
+
+  /// The execution is in the data layer and this method is responsible for
+  /// making the API call to Firebase for registering the user to the app.
+  Future<LocalUserModel> createEmailUser(
+      {required String email, required String password});
+
+  /// The execution is in the data layer and this method is responsible for
+  /// making the API call to Firebase for setting the username of the the user.
+  Future<void> setUsername({required String username});
+
+  /// The execution is in the data layer and this method is responsible for
+  /// making the API call to Firebase for signing the user out of the app.
+  Future<void> signOut();
+
+  /// This method is responsible for getting the firebase user session object
+  /// if the user is already signed in
+  Future<LocalUserModel> getUserSession();
+}
+
+/// This class deals with the authentication related remote API sources
+class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
+  final FirebaseAuth firebaseAuth;
+
+  AuthRemoteDataSourceImpl(this.firebaseAuth);
+
+  /// This method is automatically called due to the dependency injection at
+  /// runtime. It calls the Firebase API for signing in the user.
+  @override
+  Future<LocalUserModel> emailSignIn(
+      {required String email, required String password}) async {
+    try {
+      return await firebaseAuth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((userCredential) {
+        return LocalUserModel.fromFirebase(userCredential.user);
+      });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "invalid-credential" ||
+          e.code == "INVALID_LOGIN_CREDENTIALS" ||
+          e.code == "wrong-password" ||
+          e.code == "user-not-found") {
+        throw InvalidCredentialsException(
+            statusCode: e.code,
+            message:
+                "The credentials you have provided are invalid. Please try again");
+      } else if (e.code == "too-many-requests") {
+        throw FirebaseTooManyRequests(
+            statusCode: e.code,
+            message: "Too many attempts. Please wait for some time");
+      } else if (e.code == "user-disabled") {
+        throw UserDisabled(
+            statusCode: e.code,
+            message: "This user has been disabled. Please contact support");
+      } else {
+        throw AuthException(
+            statusCode: e.code,
+            message: e.message ?? "An authentication error occurred");
+      }
+    } on SocketException {
+      throw const NetworkException(
+          statusCode: "404",
+          message: "No Internet. Please check your network connection");
+    } catch (e) {
+      throw const AuthException(
+          statusCode: "error", message: "An authentication error occurred");
+    }
+  }
+
+  /// This method is automatically called due to the dependency injection at
+  /// runtime. It calls the Firebase API for registering the user.
+  @override
+  Future<LocalUserModel> createEmailUser(
+      {required String email, required String password}) async {
+    try {
+      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+
+      final visitor = LocalUserModel.fromFirebase(userCredential.user);
+
+      return visitor;
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(
+          statusCode: e.code,
+          message: e.message ?? "An error occurred while creating the user");
+    } on SocketException {
+      throw const NetworkException(
+          statusCode: "404",
+          message: "No Internet. Please check your network connection");
+    }
+  }
+
+  /// This method is automatically called due to the dependency injection at
+  /// runtime. It calls the Firebase API for setting the username of the user.
+  @override
+  Future<void> setUsername({required String username}) async {
+    try {
+      await firebaseAuth.currentUser?.updateDisplayName(username);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(
+          statusCode: e.code, message: e.message ?? "An error occurred");
+    } on SocketException {
+      throw const NetworkException(
+          statusCode: "404",
+          message: "No Internet. Please check your network connection");
+    }
+  }
+
+  /// This method is automatically called due to the dependency injection at
+  /// runtime. It calls the Firebase API for signing out the user.
+  @override
+  Future<void> signOut() async {
+    try {
+      await firebaseAuth.signOut();
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(
+          statusCode: e.code, message: e.message ?? "An error occurred");
+    } on SocketException {
+      throw const NetworkException(
+          statusCode: "404",
+          message: "No Internet. Please check your network connection");
+    }
+  }
+
+  @override
+  Future<LocalUserModel> getUserSession() async {
+    try {
+      final user = firebaseAuth.currentUser;
+
+      final visitor = LocalUserModel.fromFirebase(user);
+
+      return visitor;
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(
+          statusCode: e.code,
+          message: e.message ?? "An error occurred while creating the user");
+    } on SocketException {
+      throw const NetworkException(
+          statusCode: "404",
+          message: "No Internet. Please check your network connection");
+    }
+  }
+}
