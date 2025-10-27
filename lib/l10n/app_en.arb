@@ -1,0 +1,87 @@
+{
+  "@@locale": "en",
+  "appTitle": "The Family Altar",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "A welcome message"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
+  },
+  "signUp": "Sign Up",
+  "@signUp": {
+    "description": "Sign up button text"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password field label"
+  },
+  "forgotPassword": "Forgot Password?",
+  "@forgotPassword": {
+    "description": "Forgot password link text"
+  },
+  "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {
+    "description": "Google sign in button text"
+  },
+  "signInWithApple": "Sign in with Apple",
+  "@signInWithApple": {
+    "description": "Apple sign in button text"
+  },
+  "manna": "Manna",
+  "@manna": {
+    "description": "Manna tab label"
+  },
+  "bible": "Bible",
+  "@bible": {
+    "description": "Bible tab label"
+  },
+  "todaysReading": "Today's Reading",
+  "@todaysReading": {
+    "description": "Today's reading card title"
+  },
+  "readMore": "Read More",
+  "@readMore": {
+    "description": "Read more button text"
+  },
+  "streak": "Streak",
+  "@streak": {
+    "description": "Reading streak label"
+  },
+  "days": "days",
+  "@days": {
+    "description": "Days unit"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings page title"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language setting label"
+  },
+  "theme": "Theme",
+  "@theme": {
+    "description": "Theme setting label"
+  },
+  "light": "Light",
+  "@light": {
+    "description": "Light theme option"
+  },
+  "dark": "Dark",
+  "@dark": {
+    "description": "Dark theme option"
+  },
+  "signOut": "Sign Out",
+  "@signOut": {
+    "description": "Sign out button text"
+  }
+}

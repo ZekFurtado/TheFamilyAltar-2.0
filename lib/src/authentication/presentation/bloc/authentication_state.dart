@@ -22,6 +22,26 @@ class SigningInEmailUser extends AuthenticationState {
   const SigningInEmailUser();
 }
 
+/// State to be exhibited when a user is signing in with Google
+class SigningInGoogleUser extends AuthenticationState {
+  const SigningInGoogleUser();
+}
+
+/// State to be exhibited when a user is signing in with Apple
+class SigningInAppleUser extends AuthenticationState {
+  const SigningInAppleUser();
+}
+
+/// State to be exhibited when sending password reset email
+class SendingPasswordReset extends AuthenticationState {
+  const SendingPasswordReset();
+}
+
+/// State to be exhibited when password reset email has been sent
+class PasswordResetSent extends AuthenticationState {
+  const PasswordResetSent();
+}
+
 class SigningOutUser extends AuthenticationState {
   const SigningOutUser();
 }
@@ -35,10 +55,10 @@ class Authenticated extends AuthenticationState {
   const Authenticated(this.visitor);
 
   /// The user object returned from Firebase
-  final LocalUser visitor;
+  final LocalUser? visitor;
 
   @override
-  List<Object> get props => [visitor.uid ?? ''];
+  List<Object> get props => [visitor?.uid ?? ''];
 }
 
 class SignedOut extends AuthenticationState {

@@ -1,144 +1,292 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:iconly/iconly.dart';
 import 'package:thefamilyaltar/src/authentication/presentation/bloc/auth_cubit.dart';
 
 import '../../bloc/authentication_bloc.dart';
 
 class LoginForm extends StatelessWidget {
-  LoginForm({super.key});
-
-  final TextEditingController emailController = TextEditingController();
-
-  final TextEditingController passwordController = TextEditingController();
+  const LoginForm({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
     return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         if (state is Authenticated) {
-          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome, ${state.visitor.name}")));
           Navigator.pushNamedAndRemoveUntil(
               context, '/home', ModalRoute.withName('/'));
         } else if (state is AuthenticationError) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.message)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
       },
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextFormField(
             controller: emailController,
+            keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.25)),
+              labelText: 'Email',
+              hintText: 'Enter your email address',
+              prefixIcon: Icon(
+                Icons.email_outlined,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.outline,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.25)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withValues(alpha: 0.3),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.25)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
                 ),
-                labelText: 'Email'),
+              ),
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surface,
+            ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           BlocProvider(
             create: (context) => PasswordVisibilityCubit(),
             child: BlocBuilder<PasswordVisibilityCubit, bool>(
               builder: (context, hidePass) {
                 return TextFormField(
                   controller: passwordController,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.25)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.25)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.25)),
-                      ),
-                      labelText: 'Password',
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          context.read<PasswordVisibilityCubit>().toggle();
-                        },
-                        icon: hidePass
-                            ? const Icon(Icons.visibility_off)
-                            : const Icon(Icons.visibility),
-                      )),
                   obscureText: hidePass,
-                  obscuringCharacter: "*",
+                  obscuringCharacter: "•",
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'Enter your password',
+                    prefixIcon: Icon(
+                      Icons.lock_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        context.read<PasswordVisibilityCubit>().toggle();
+                      },
+                      icon: Icon(
+                        hidePass ? Icons.visibility_off : Icons.visibility,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outline
+                            .withValues(alpha: 0.3),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
+                  ),
                 );
               },
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 16),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: () {},
-              style: ButtonStyle(
-                  foregroundColor: WidgetStatePropertyAll(
-                      Theme.of(context).colorScheme.onSurface),
-                  backgroundColor: WidgetStatePropertyAll(
-                      Theme.of(context).colorScheme.secondary)),
-              child: const Text(
+              onPressed: () {
+                // TODO: Implement forgot password functionality
+              },
+              child: Text(
                 "Forgot Password?",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
-          const SizedBox(
-            height: 40,
+          const SizedBox(height: 32),
+          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            builder: (context, state) {
+              final isLoading = state is SigningInEmailUser;
+
+              return SizedBox(
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          context
+                              .read<AuthenticationBloc>()
+                              .add(EmailSignInEvent(
+                                email: emailController.text.trim(),
+                                password: passwordController.text.trim(),
+                              ));
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                  ),
+                  child: isLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).colorScheme.onPrimary,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          "Sign In",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                        ),
+                ),
+              );
+            },
           ),
-          SizedBox(
-            height: 35,
-            child: TextButton(
-              onPressed: () {
-                /* Calls AuthenticationCubit.emailSignIn(email,
-                            password). This call will cause a series of actions
-                            in different layers. This is the presentation layer.
-                             */
-
-                /*context.read<cubit.AuthenticationCubit>().emailSignIn(
-                                    email: emailController.text.trim(),
-                                    password: passwordController.text.trim());*/
-
-                context.read<AuthenticationBloc>().add(EmailSignInEvent(
-                    email: emailController.text.trim(),
-                    password: passwordController.text.trim()));
-              },
-              child: const Text("Login"),
-            ),
-          )
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: Divider(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withValues(alpha: 0.3),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  "Or continue with",
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
+                      ),
+                ),
+              ),
+              Expanded(
+                child: Divider(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withValues(alpha: 0.3),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    // TODO: Implement Google sign in
+                  },
+                  icon: Icon(
+                    Icons.g_mobiledata,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  label: Text(
+                    "Google",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    side: BorderSide(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withValues(alpha: 0.3),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    // TODO: Implement Apple sign in
+                  },
+                  icon: Icon(
+                    Icons.apple,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  label: Text(
+                    "Apple",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    side: BorderSide(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withValues(alpha: 0.3),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

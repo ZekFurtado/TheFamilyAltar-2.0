@@ -84,7 +84,49 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  ResultFuture<LocalUser> getUserSession() async {
+  ResultFuture<LocalUser> googleSignIn() async {
+    try {
+      final user = await remoteDataSource.googleSignIn();
+      return Right(user);
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message, statusCode: e.statusCode));
+    } on AuthException catch (e) {
+      return Left(AuthFailure(message: e.message, statusCode: e.statusCode));
+    } catch (e) {
+      return const Left(AuthFailure(message: "Google sign in failed", statusCode: "error"));
+    }
+  }
+
+  @override
+  ResultFuture<LocalUser> appleSignIn() async {
+    try {
+      final user = await remoteDataSource.appleSignIn();
+      return Right(user);
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message, statusCode: e.statusCode));
+    } on AuthException catch (e) {
+      return Left(AuthFailure(message: e.message, statusCode: e.statusCode));
+    } catch (e) {
+      return const Left(AuthFailure(message: "Apple sign in failed", statusCode: "error"));
+    }
+  }
+
+  @override
+  ResultFuture<void> forgotPassword({required String email}) async {
+    try {
+      await remoteDataSource.forgotPassword(email: email);
+      return const Right(null);
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message, statusCode: e.statusCode));
+    } on AuthException catch (e) {
+      return Left(AuthFailure(message: e.message, statusCode: e.statusCode));
+    } catch (e) {
+      return const Left(AuthFailure(message: "Failed to send password reset email", statusCode: "error"));
+    }
+  }
+
+  @override
+  ResultFuture<LocalUser?> getUserSession() async {
     try {
       final visitorModel = await remoteDataSource.getUserSession();
       return Right(visitorModel);

@@ -31,6 +31,23 @@ class GetUserSessionEvent extends AuthenticationEvent {
   const GetUserSessionEvent();
 }
 
+class GoogleSignInEvent extends AuthenticationEvent {
+  const GoogleSignInEvent();
+}
+
+class AppleSignInEvent extends AuthenticationEvent {
+  const AppleSignInEvent();
+}
+
+class ForgotPasswordEvent extends AuthenticationEvent {
+  const ForgotPasswordEvent({required this.email});
+
+  final String email;
+
+  @override
+  List<Object> get props => [email];
+}
+
 class SignOutUserEvent extends AuthenticationEvent {
   const SignOutUserEvent();
 }

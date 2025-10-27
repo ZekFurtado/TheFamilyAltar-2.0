@@ -1,39 +1,46 @@
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:thefamilyaltar/core/errors/exceptions.dart';
 
 import '../models/local_user_model.dart';
 
 abstract class AuthRemoteDataSource {
-  /// The execution is in the data layer and this method is responsible for
-  /// making the API call to Firebase for signing the user in to the app.
+  /// Email/password sign in
   Future<LocalUserModel> emailSignIn(
       {required String email, required String password});
 
-  /// The execution is in the data layer and this method is responsible for
-  /// making the API call to Firebase for registering the user to the app.
+  /// Google sign in
+  Future<LocalUserModel> googleSignIn();
+
+  /// Apple sign in
+  Future<LocalUserModel> appleSignIn();
+
+  /// Register new user with email/password
   Future<LocalUserModel> createEmailUser(
       {required String email, required String password});
 
-  /// The execution is in the data layer and this method is responsible for
-  /// making the API call to Firebase for setting the username of the the user.
+  /// Send password reset email
+  Future<void> forgotPassword({required String email});
+
+  /// Set username for the user
   Future<void> setUsername({required String username});
 
-  /// The execution is in the data layer and this method is responsible for
-  /// making the API call to Firebase for signing the user out of the app.
+  /// Sign out the user
   Future<void> signOut();
 
-  /// This method is responsible for getting the firebase user session object
-  /// if the user is already signed in
-  Future<LocalUserModel> getUserSession();
+  /// Get current user session
+  Future<LocalUserModel?> getUserSession();
 }
 
 /// This class deals with the authentication related remote API sources
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth firebaseAuth;
+  final GoogleSignIn _googleSignIn;
 
-  AuthRemoteDataSourceImpl(this.firebaseAuth);
+  AuthRemoteDataSourceImpl(this.firebaseAuth) : _googleSignIn = GoogleSignIn();
 
   /// This method is automatically called due to the dependency injection at
   /// runtime. It calls the Firebase API for signing in the user.
@@ -134,9 +141,93 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<LocalUserModel> getUserSession() async {
+  Future<LocalUserModel> googleSignIn() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      
+      if (googleUser == null) {
+        throw const AuthException(
+            statusCode: "cancelled", message: "Google sign in was cancelled");
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential = await firebaseAuth.signInWithCredential(credential);
+      return LocalUserModel.fromFirebase(userCredential.user);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(
+          statusCode: e.code,
+          message: e.message ?? "An error occurred during Google sign in");
+    } on SocketException {
+      throw const NetworkException(
+          statusCode: "404",
+          message: "No Internet. Please check your network connection");
+    } catch (e) {
+      throw const AuthException(
+          statusCode: "error", message: "An error occurred during Google sign in");
+    }
+  }
+
+  @override
+  Future<LocalUserModel> appleSignIn() async {
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: credential.identityToken,
+        accessToken: credential.authorizationCode,
+      );
+
+      final userCredential = await firebaseAuth.signInWithCredential(oauthCredential);
+      return LocalUserModel.fromFirebase(userCredential.user);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(
+          statusCode: e.code,
+          message: e.message ?? "An error occurred during Apple sign in");
+    } on SocketException {
+      throw const NetworkException(
+          statusCode: "404",
+          message: "No Internet. Please check your network connection");
+    } catch (e) {
+      throw const AuthException(
+          statusCode: "error", message: "An error occurred during Apple sign in");
+    }
+  }
+
+  @override
+  Future<void> forgotPassword({required String email}) async {
+    try {
+      await firebaseAuth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(
+          statusCode: e.code,
+          message: e.message ?? "An error occurred while sending password reset email");
+    } on SocketException {
+      throw const NetworkException(
+          statusCode: "404",
+          message: "No Internet. Please check your network connection");
+    }
+  }
+
+  @override
+  Future<LocalUserModel?> getUserSession() async {
     try {
       final user = firebaseAuth.currentUser;
+      print("USER: $user");
+
+      if (user == null) {
+        return null;
+      }
 
       final visitor = LocalUserModel.fromFirebase(user);
 
