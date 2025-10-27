@@ -12,7 +12,7 @@ class DailyReading extends Equatable {
   });
 
   final String id;
-  final DateTime date;
+  final String date; // Human-readable date like "January 1"
   final String title;
   final String scripture;
   final String sermonContent;

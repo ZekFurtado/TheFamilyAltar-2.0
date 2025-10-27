@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thefamilyaltar/src/home/presentation/bloc/home_bloc.dart';
 
 import 'core/common/user_provider.dart';
 import 'core/services/injection_container.dart';
@@ -46,6 +47,7 @@ void main() async {
     child: MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => sl<AuthenticationBloc>()),
+        BlocProvider(create: (context) => sl<HomeBloc>()),
       ],
       child: const TheFamilyAltarApp(),
     ),

@@ -7,10 +7,12 @@ class TodaysReadingCard extends StatelessWidget {
     super.key,
     required this.reading,
     this.onReadMore,
+    this.isToday = true,
   });
 
   final DailyReading reading;
   final VoidCallback? onReadMore;
+  final bool isToday;
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +42,13 @@ class TodaysReadingCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    Icons.calendar_today,
+                    isToday ? Icons.calendar_today : Icons.event,
                     color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    "Today's Reading",
+                    isToday ? "Today's Reading" : "${reading.date} Reading",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.primary,

@@ -42,7 +42,7 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
         context.read<HomeBloc>().add(
           MarkReadingComplete(
             userId: widget.userId!,
-            readDate: widget.reading.date,
+            readDate: DateTime.now(), // Use current date for streak tracking
           ),
         );
         _hasMarkedComplete = true;

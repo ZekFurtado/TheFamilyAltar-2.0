@@ -49,6 +49,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         body: SafeArea(
           child: Column(
             children: [
+              // Top bar with Skip button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        context.read<OnboardingBloc>().add(
+                              const CacheFirstTimerEvent(),
+                            );
+                      },
+                      child: Text(
+                        'Skip',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Expanded(
                 flex: 8,
                 child: PageView.builder(
@@ -150,20 +173,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   ),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: () {
-                          context.read<OnboardingBloc>().add(
-                                const CacheFirstTimerEvent(),
-                              );
-                        },
-                        child: Text(
-                          'Skip',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
                       ),
                     ],
                   ),

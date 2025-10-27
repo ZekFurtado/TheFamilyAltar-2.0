@@ -57,8 +57,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
         .get();
 
     if (!doc.exists) {
-      return const UserStreakModel(
-        userId: '',
+      // Return a proper default streak for new users
+      return UserStreakModel(
+        userId: userId, // Use the actual userId
         currentStreak: 0,
         longestStreak: 0,
         completedDates: [],
