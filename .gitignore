@@ -45,3 +45,8 @@ app.*.map.json
 /android/app/release
 /specs/initial-requirements.md
 /lib/core/utils/firebase_options.dart
+/scripts/serviceAccountKey.json
+/scripts/
+/CLAUDE.md
+/firebase.json
+/firestore.rules

@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "105351221041",
+    "project_id": "thefamilyaltar-d026c",
+    "storage_bucket": "thefamilyaltar-d026c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105351221041:android:bd6262f5ee3377b18dea10",
+        "android_client_info": {
+          "package_name": "com.zionsphere.thefamilyaltar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "105351221041-dsi43tusb65fkl96i2al3nq336bom90s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zionsphere.thefamilyaltar",
+            "certificate_hash": "bb31d490ed1fa2359171095533c9a003cdc868d6"
+          }
+        },
+        {
+          "client_id": "105351221041-mvlfl45aqbl8rjj9ilq7h9qf8u5ntebp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zionsphere.thefamilyaltar",
+            "certificate_hash": "52427e81ff0e88f8c9004a6a647e7ff02bde6c94"
+          }
+        },
+        {
+          "client_id": "105351221041-c0ak7r86snbs16532itd7n2pnv27297c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbliYUqkoyR_d02KcIwyn6eksdGOqwNQU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "105351221041-c0ak7r86snbs16532itd7n2pnv27297c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "105351221041-dflj2vn78ta99k4o39kdurbn4tp1sror.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.logostabernacle.thefamilyaltar"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

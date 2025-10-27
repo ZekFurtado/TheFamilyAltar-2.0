@@ -16,7 +16,8 @@ class DailyReadingModel extends DailyReading {
   factory DailyReadingModel.fromMap(Map<String, dynamic> map) {
     return DailyReadingModel(
       id: map['id'] as String,
-      date: DateTime.parse(map['date'] as String),
+      date: map['date'] as String,
+      // Keep as string for human-readable dates
       title: map['title'] as String,
       scripture: map['scripture'] as String,
       sermonContent: map['sermonContent'] as String,
@@ -31,7 +32,7 @@ class DailyReadingModel extends DailyReading {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'date': date.toIso8601String(),
+      'date': date, // Keep as string
       'title': title,
       'scripture': scripture,
       'sermonContent': sermonContent,
@@ -44,7 +45,7 @@ class DailyReadingModel extends DailyReading {
 
   DailyReadingModel copyWith({
     String? id,
-    DateTime? date,
+    String? date,
     String? title,
     String? scripture,
     String? sermonContent,

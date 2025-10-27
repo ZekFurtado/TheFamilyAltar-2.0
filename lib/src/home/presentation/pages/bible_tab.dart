@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:thefamilyaltar/core/res/media_res.dart';
+
 class BibleTab extends StatelessWidget {
   const BibleTab({super.key});
 
@@ -8,6 +10,10 @@ class BibleTab extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset(MediaRes.logoCropped),
+        ),
         title: Text(
           "Bible",
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
