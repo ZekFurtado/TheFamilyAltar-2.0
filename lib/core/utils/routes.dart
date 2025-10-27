@@ -3,6 +3,7 @@ import 'package:thefamilyaltar/src/authentication/presentation/pages/login.dart'
 import 'package:thefamilyaltar/src/authentication/presentation/pages/signup_screen.dart';
 import 'package:thefamilyaltar/src/home/presentation/pages/home_screen.dart';
 import 'package:thefamilyaltar/src/onboarding/presentation/pages/onboarding_screen.dart';
+import 'package:thefamilyaltar/src/settings/presentation/pages/settings_screen.dart';
 
 class Routes {
   static var routes = {
@@ -10,6 +11,7 @@ class Routes {
     '/signup': (context) => const SignupScreen(),
     '/home': (context) => const HomeScreen(),
     '/onboarding': (context) => const OnboardingScreen(),
+    '/settings': (context) => const SettingsScreen(),
   };
 }
 

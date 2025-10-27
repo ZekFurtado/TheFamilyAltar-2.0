@@ -59,7 +59,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     result.fold(
       (failure) => emit(HomeError(message: failure.message)),
-      (reading) => emit(ReadingByDateLoaded(reading: reading)),
+      (reading) => emit(ReadingByDateLoaded(reading: reading, selectedDay: event.date)),
     );
   }
 
