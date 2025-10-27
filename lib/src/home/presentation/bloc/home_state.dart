@@ -25,9 +25,10 @@ class TodaysReadingLoaded extends HomeState {
 }
 
 class ReadingByDateLoaded extends HomeState {
-  const ReadingByDateLoaded({required this.reading});
+  const ReadingByDateLoaded({required this.reading, this.selectedDay});
 
   final DailyReading reading;
+  final DateTime? selectedDay;
 
   @override
   List<Object?> get props => [reading];

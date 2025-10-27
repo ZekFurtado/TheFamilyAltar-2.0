@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:thefamilyaltar/core/res/media_res.dart';
@@ -24,6 +26,7 @@ class _MannaTabState extends State<MannaTab> {
   String? currentUserId;
   bool isLoading = true;
   bool isShowingTodaysReading = true;
+  DateTime? selectedDay;
 
   @override
   void initState() {
@@ -35,13 +38,18 @@ class _MannaTabState extends State<MannaTab> {
 
   void _loadInitialData() {
     final authState = context.read<AuthenticationBloc>().state;
-    if (authState is Authenticated && authState.visitor != null) {
-      currentUserId = authState.visitor!.uid;
-      context.read<HomeBloc>().add(const LoadTodaysReading());
+    log('_loadInitialData: authState = ${authState.runtimeType}');
+    
+    context.read<HomeBloc>().add(const LoadTodaysReading());
+    
+    if (authState is Authenticated && authState.visitor != null && authState.visitor!.uid != null) {
+      log('_loadInitialData: Setting currentUserId to ${authState.visitor!.uid}');
+      setState(() {
+        currentUserId = authState.visitor!.uid;
+      });
       context.read<HomeBloc>().add(LoadUserStreak(userId: currentUserId!));
     } else {
-      // Still load today's reading even if not authenticated
-      context.read<HomeBloc>().add(const LoadTodaysReading());
+      log('_loadInitialData: User not authenticated or visitor is null');
     }
   }
 
@@ -66,7 +74,7 @@ class _MannaTabState extends State<MannaTab> {
         actions: [
           IconButton(
             onPressed: () {
-              // TODO: Navigate to settings
+              Navigator.pushNamed(context, '/settings');
             },
             icon: Icon(
               Icons.settings,
@@ -87,12 +95,14 @@ class _MannaTabState extends State<MannaTab> {
                 setState(() {
                   currentReading = state.reading;
                   isLoading = false;
+                  selectedDay = DateTime.now();
                   isShowingTodaysReading = true;
                 });
               } else if (state is ReadingByDateLoaded) {
                 setState(() {
                   currentReading = state.reading;
                   isLoading = false;
+                  selectedDay = state.selectedDay;
                   isShowingTodaysReading = false;
                 });
               } else if (state is UserStreakLoaded) {
@@ -114,12 +124,28 @@ class _MannaTabState extends State<MannaTab> {
           ),
           BlocListener<AuthenticationBloc, AuthenticationState>(
             listener: (context, state) {
-              if (state is Authenticated && state.visitor != null && currentUserId == null) {
-                // User just signed in, load their streak data
+              log('AuthenticationBloc state changed: ${state.runtimeType}');
+              
+              if (state is Authenticated && state.visitor != null && state.visitor!.uid != null) {
+                // User is authenticated, check if we need to update currentUserId
+                final newUserId = state.visitor!.uid;
+                log('User authenticated with UID: $newUserId, current UID: $currentUserId');
+                
+                if (currentUserId != newUserId) {
+                  log('Updating currentUserId to $newUserId');
+                  setState(() {
+                    currentUserId = newUserId;
+                  });
+                  // Load user streak data whenever user ID changes
+                  context.read<HomeBloc>().add(LoadUserStreak(userId: currentUserId!));
+                }
+              } else if (state is SignedOut) {
+                log('User signed out, clearing currentUserId');
+                // User signed out, clear the current user ID
                 setState(() {
-                  currentUserId = state.visitor!.uid;
+                  currentUserId = null;
+                  userStreak = null;
                 });
-                context.read<HomeBloc>().add(LoadUserStreak(userId: currentUserId!));
               }
             },
           ),
@@ -127,6 +153,10 @@ class _MannaTabState extends State<MannaTab> {
         child: RefreshIndicator(
           onRefresh: () async {
             _loadInitialData();
+            // Also reload user streak if we have a current user
+            if (currentUserId != null) {
+              context.read<HomeBloc>().add(LoadUserStreak(userId: currentUserId!));
+            }
           },
           child: isLoading
               ? const Center(
@@ -238,14 +268,33 @@ class _MannaTabState extends State<MannaTab> {
                         const SizedBox(height: 16),
                         ReadingCalendar(
                           streak: userStreak!,
+                          selectedDay: selectedDay,
+                          onDateSelected: (selectedDate) {
+                            context.read<HomeBloc>().add(
+                              LoadReadingByDate(date: selectedDate),
+                            );
+                            selectedDay = selectedDate;
+                          },
+                        ),
+                      ] else ...[
+                        const SizedBox(height: 8),
+                        // Show default calendar even for new/unauthenticated users
+                        ReadingCalendar(
+                          streak: UserStreak(
+                            userId: currentUserId ?? 'guest',
+                            currentStreak: 0,
+                            longestStreak: 0,
+                            completedDates: const [],
+                            lastReadDate: null,
+                            firstAppUseDate: null, // No first use date means no red markers
+                          ),
                           onDateSelected: (selectedDate) {
                             context.read<HomeBloc>().add(
                               LoadReadingByDate(date: selectedDate),
                             );
                           },
                         ),
-                      ] else if (currentUserId != null) ...[
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 16),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 16),
                           padding: const EdgeInsets.all(20),
@@ -265,7 +314,9 @@ class _MannaTabState extends State<MannaTab> {
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                "Start Your Reading Journey",
+                                currentUserId != null 
+                                  ? "Start Your Reading Journey"
+                                  : "Sign in to Track Your Progress",
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   color: Theme.of(context).colorScheme.primary,
@@ -273,7 +324,9 @@ class _MannaTabState extends State<MannaTab> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                "Begin reading daily to build your streak and track your spiritual growth.",
+                                currentUserId != null
+                                  ? "Begin reading daily to build your streak and track your spiritual growth."
+                                  : "Create an account to track your reading streak and spiritual progress.",
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                 ),

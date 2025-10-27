@@ -7,6 +7,7 @@ class UserStreak extends Equatable {
     required this.longestStreak,
     required this.completedDates,
     required this.lastReadDate,
+    this.firstAppUseDate,
   });
 
   final String userId;
@@ -14,6 +15,7 @@ class UserStreak extends Equatable {
   final int longestStreak;
   final List<DateTime> completedDates;
   final DateTime? lastReadDate;
+  final DateTime? firstAppUseDate; // When the user first started using the app
 
   @override
   List<Object?> get props => [
@@ -22,5 +24,6 @@ class UserStreak extends Equatable {
         longestStreak,
         completedDates,
         lastReadDate,
+        firstAppUseDate,
       ];
 }

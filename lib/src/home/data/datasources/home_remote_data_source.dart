@@ -57,14 +57,21 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
         .get();
 
     if (!doc.exists) {
-      // Return a proper default streak for new users
-      return UserStreakModel(
+      // Create a proper default streak for new users and save it to Firestore
+      final now = DateTime.now();
+      final newStreak = UserStreakModel(
         userId: userId, // Use the actual userId
         currentStreak: 0,
         longestStreak: 0,
         completedDates: [],
         lastReadDate: null,
+        firstAppUseDate: now, // Set the first app use date to now
       );
+      
+      // Save the new streak to Firestore so it persists
+      await firestore.collection('user_streaks').doc(userId).set(newStreak.toMap());
+      
+      return newStreak;
     }
 
     return UserStreakModel.fromMap(doc.data()!);
@@ -81,12 +88,14 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       if (doc.exists) {
         currentStreak = UserStreakModel.fromMap(doc.data()!);
       } else {
+        // New user - set first app use date to today
         currentStreak = UserStreakModel(
           userId: userId,
           currentStreak: 0,
           longestStreak: 0,
           completedDates: [],
           lastReadDate: null,
+          firstAppUseDate: DateTime.now(),
         );
       }
 
