@@ -117,7 +117,7 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
                         ),
                       ),
                       child: Text(
-                        widget.reading.scripture,
+                        widget.reading.scriptureText,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontStyle: FontStyle.italic,
                           color: Theme.of(context).colorScheme.onSurface,

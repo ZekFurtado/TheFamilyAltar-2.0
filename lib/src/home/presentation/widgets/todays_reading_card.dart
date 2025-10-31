@@ -66,7 +66,7 @@ class TodaysReadingCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                reading.scripture,
+                reading.scriptureText,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontStyle: FontStyle.italic,
                   color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8),

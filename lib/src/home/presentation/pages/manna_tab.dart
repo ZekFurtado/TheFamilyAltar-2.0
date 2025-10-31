@@ -50,6 +50,11 @@ class _MannaTabState extends State<MannaTab> {
       context.read<HomeBloc>().add(LoadUserStreak(userId: currentUserId!));
     } else {
       log('_loadInitialData: User not authenticated or visitor is null');
+      // Clear user data if not authenticated
+      setState(() {
+        currentUserId = null;
+        userStreak = null;
+      });
     }
   }
 
