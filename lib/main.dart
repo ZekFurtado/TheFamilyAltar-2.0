@@ -119,16 +119,20 @@ class _RouteResolverState extends State<RouteResolver> {
     return BlocConsumer<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) async {
         if (state is Authenticated) {
-          // User is logged in, navigate to home
+          // User is logged in, update UserProvider and navigate to home
           print('state.visitor');
           print(state.visitor);
           if(state.visitor != null){
+            // Update UserProvider with authenticated user
+            context.read<UserProvider>().user = state.visitor;
             await _navigateToHome();
           }
           else {
             await _checkFirstTimeAndNavigate(context);
           }
         } else if (state is AuthenticationError || state is SignedOut) {
+          // Clear UserProvider when not authenticated
+          context.read<UserProvider>().user = null;
           // Check if first time user for onboarding
           await _checkFirstTimeAndNavigate(context);
         }

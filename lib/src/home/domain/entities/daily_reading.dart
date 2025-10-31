@@ -6,6 +6,7 @@ class DailyReading extends Equatable {
     required this.date,
     required this.title,
     required this.scripture,
+    required this.scriptureText,
     required this.sermonContent,
     required this.scripturesForDay,
     required this.sermonReference,
@@ -15,6 +16,7 @@ class DailyReading extends Equatable {
   final String date; // Human-readable date like "January 1"
   final String title;
   final String scripture;
+  final String scriptureText;
   final String sermonContent;
   final List<String> scripturesForDay;
   final String sermonReference;
