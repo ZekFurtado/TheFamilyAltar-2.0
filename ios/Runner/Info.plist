@@ -47,5 +47,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>GOOGLE_SIGN_IN</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.105351221041-i2ui6vm7jlm7ustl7hj2q19tn42ciqfj</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
