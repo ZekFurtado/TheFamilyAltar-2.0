@@ -141,4 +141,18 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(AuthFailure(message: e.message, statusCode: e.statusCode));
     }
   }
+
+  @override
+  ResultFuture<void> deleteAccount() async {
+    try {
+      await remoteDataSource.deleteAccount();
+      return const Right(null);
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message, statusCode: e.statusCode));
+    } on AuthException catch (e) {
+      return Left(AuthFailure(message: e.message, statusCode: e.statusCode));
+    } catch (e) {
+      return const Left(AuthFailure(message: "Failed to delete account", statusCode: "error"));
+    }
+  }
 }

@@ -281,6 +281,33 @@ class _MannaTabState extends State<MannaTab> {
                             selectedDay = selectedDate;
                           },
                         ),
+                        const SizedBox(height: 32),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.attribution,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Content provided by Voice of God Recordings Inc.',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                  fontSize: 11,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
                       ] else ...[
                         const SizedBox(height: 8),
                         // Show default calendar even for new/unauthenticated users
@@ -299,41 +326,28 @@ class _MannaTabState extends State<MannaTab> {
                             );
                           },
                         ),
-                        const SizedBox(height: 16),
+                        // const SizedBox(height: 16),
+                        const SizedBox(height: 32),
                         Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
-                          padding: const EdgeInsets.all(20),
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-                            ),
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
                             children: [
                               Icon(
-                                Icons.timeline,
-                                size: 32,
-                                color: Theme.of(context).colorScheme.primary,
+                                Icons.attribution,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 4),
                               Text(
-                                currentUserId != null 
-                                  ? "Start Your Reading Journey"
-                                  : "Sign in to Track Your Progress",
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                currentUserId != null
-                                  ? "Begin reading daily to build your streak and track your spiritual growth."
-                                  : "Create an account to track your reading streak and spiritual progress.",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                'Content provided by Voice of God Recordings Inc.',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                  fontSize: 11,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
