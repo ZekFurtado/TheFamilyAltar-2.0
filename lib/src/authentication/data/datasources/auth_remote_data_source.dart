@@ -33,6 +33,9 @@ abstract class AuthRemoteDataSource {
 
   /// Get current user session
   Future<LocalUserModel?> getUserSession();
+
+  /// Delete user account permanently
+  Future<void> deleteAccount();
 }
 
 /// This class deals with the authentication related remote API sources
@@ -240,6 +243,35 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw const NetworkException(
           statusCode: "404",
           message: "No Internet. Please check your network connection");
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    try {
+      final user = firebaseAuth.currentUser;
+      if (user == null) {
+        throw const AuthException(
+            statusCode: "no-user", message: "No user is currently signed in");
+      }
+      await user.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        throw AuthException(
+            statusCode: e.code,
+            message: "This operation requires recent authentication. Please sign in again.");
+      } else {
+        throw AuthException(
+            statusCode: e.code,
+            message: e.message ?? "An error occurred while deleting the account");
+      }
+    } on SocketException {
+      throw const NetworkException(
+          statusCode: "404",
+          message: "No Internet. Please check your network connection");
+    } catch (e) {
+      throw const AuthException(
+          statusCode: "error", message: "An error occurred while deleting the account");
     }
   }
 }

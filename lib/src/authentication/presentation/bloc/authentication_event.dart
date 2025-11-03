@@ -51,3 +51,7 @@ class ForgotPasswordEvent extends AuthenticationEvent {
 class SignOutUserEvent extends AuthenticationEvent {
   const SignOutUserEvent();
 }
+
+class DeleteAccountEvent extends AuthenticationEvent {
+  const DeleteAccountEvent();
+}

@@ -65,6 +65,14 @@ class SignedOut extends AuthenticationState {
   const SignedOut();
 }
 
+class DeletingAccount extends AuthenticationState {
+  const DeletingAccount();
+}
+
+class AccountDeleted extends AuthenticationState {
+  const AccountDeleted();
+}
+
 /// State to be exhibited when an error has occurred while authenticating the
 /// user
 class AuthenticationError extends AuthenticationState {

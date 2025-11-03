@@ -16,6 +16,7 @@ import 'package:thefamilyaltar/src/authentication/domain/usecases/forgot_passwor
 import 'package:thefamilyaltar/src/authentication/domain/usecases/get_user_session.dart';
 import 'package:thefamilyaltar/src/authentication/domain/usecases/google_sign_in.dart';
 import 'package:thefamilyaltar/src/authentication/domain/usecases/sign_out.dart';
+import 'package:thefamilyaltar/src/authentication/domain/usecases/delete_account.dart';
 import 'package:thefamilyaltar/src/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:thefamilyaltar/src/onboarding/data/datasources/onboarding_local_data_source.dart';
 import 'package:thefamilyaltar/src/onboarding/data/repositories/onboarding_repository_impl.dart';
@@ -48,7 +49,8 @@ Future<void> init() async {
         appleSignIn: sl(),
         forgotPassword: sl(),
         getUserSession: sl(),
-        signOutUser: sl()))
+        signOutUser: sl(),
+        deleteAccount: sl()))
 
     /// Onboarding
     ..registerFactory(() => OnboardingBloc(
@@ -72,6 +74,7 @@ Future<void> init() async {
     ..registerLazySingleton(() => ForgotPassword(sl()))
     ..registerLazySingleton(() => GetUserSession(sl()))
     ..registerLazySingleton(() => SignOutUseCase(sl()))
+    ..registerLazySingleton(() => DeleteAccount(sl()))
 
     /// Onboarding
     ..registerLazySingleton(() => CacheFirstTimer(sl()))

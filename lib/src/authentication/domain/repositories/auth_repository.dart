@@ -26,4 +26,7 @@ abstract class AuthRepository {
 
   /// This method gets the user session if the user is logged in
   ResultFuture<LocalUser?> getUserSession();
+
+  /// This method permanently deletes the user account and all associated data
+  ResultFuture<void> deleteAccount();
 }

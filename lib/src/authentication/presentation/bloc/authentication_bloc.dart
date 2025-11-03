@@ -8,6 +8,7 @@ import 'package:thefamilyaltar/src/authentication/domain/usecases/forgot_passwor
 import 'package:thefamilyaltar/src/authentication/domain/usecases/google_sign_in.dart';
 import 'package:thefamilyaltar/src/authentication/domain/usecases/sign_out.dart';
 
+import '../../domain/usecases/delete_account.dart';
 import '../../domain/usecases/get_user_session.dart';
 
 part 'authentication_event.dart';
@@ -22,7 +23,8 @@ class AuthenticationBloc
       required AppleSignIn appleSignIn,
       required ForgotPassword forgotPassword,
       required GetUserSession getUserSession,
-      required SignOutUseCase signOutUser})
+      required SignOutUseCase signOutUser,
+      required DeleteAccount deleteAccount})
       : _createUser = createUser,
         _emailSignIn = emailSignIn,
         _googleSignIn = googleSignIn,
@@ -30,6 +32,7 @@ class AuthenticationBloc
         _forgotPassword = forgotPassword,
         _getUserSession = getUserSession,
         _signOutUseCase = signOutUser,
+        _deleteAccount = deleteAccount,
         super(const AuthenticationInitial()) {
     on<CreateEmailUserEvent>(_createEmailUserHandler);
     on<EmailSignInEvent>(_emailSignInHandler);
@@ -38,6 +41,7 @@ class AuthenticationBloc
     on<ForgotPasswordEvent>(_forgotPasswordHandler);
     on<GetUserSessionEvent>(_getUserSessionHandler);
     on<SignOutUserEvent>(_signOutUserEventHandler);
+    on<DeleteAccountEvent>(_deleteAccountEventHandler);
   }
 
   final CreateUser _createUser;
@@ -47,6 +51,7 @@ class AuthenticationBloc
   final ForgotPassword _forgotPassword;
   final GetUserSession _getUserSession;
   final SignOutUseCase _signOutUseCase;
+  final DeleteAccount _deleteAccount;
 
   Future<void> _createEmailUserHandler(
       CreateEmailUserEvent event, Emitter<AuthenticationState> emit) async {
@@ -125,5 +130,16 @@ class AuthenticationBloc
     result.fold(
         (failure) => emit(AuthenticationError(message: failure.message)),
         (visitor) => emit(const SignedOut()));
+  }
+
+  Future<void> _deleteAccountEventHandler(
+      DeleteAccountEvent event, Emitter<AuthenticationState> emit) async {
+    emit(const DeletingAccount());
+
+    final result = await _deleteAccount();
+
+    result.fold(
+        (failure) => emit(AuthenticationError(message: failure.message)),
+        (_) => emit(const AccountDeleted()));
   }
 }
