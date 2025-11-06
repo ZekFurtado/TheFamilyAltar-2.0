@@ -67,61 +67,58 @@ class LoginForm extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          BlocProvider(
-            create: (context) => PasswordVisibilityCubit(),
-            child: BlocBuilder<PasswordVisibilityCubit, bool>(
-              builder: (context, hidePass) {
-                return TextFormField(
-                  controller: passwordController,
-                  obscureText: hidePass,
-                  obscuringCharacter: "•",
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
-                    prefixIcon: Icon(
-                      Icons.lock_outline,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        context.read<PasswordVisibilityCubit>().toggle();
-                      },
-                      icon: Icon(
-                        hidePass ? Icons.visibility_off : Icons.visibility,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withValues(alpha: 0.6),
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .outline
-                            .withValues(alpha: 0.3),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.primary,
-                        width: 2,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.surface,
+          BlocBuilder<PasswordVisibilityCubit, bool>(
+            builder: (context, hidePass) {
+              return TextFormField(
+                controller: passwordController,
+                obscureText: hidePass,
+                obscuringCharacter: "•",
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  hintText: 'Enter your password',
+                  prefixIcon: Icon(
+                    Icons.lock_outline,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-                );
-              },
-            ),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      context.read<PasswordVisibilityCubit>().toggle();
+                    },
+                    icon: Icon(
+                      hidePass ? Icons.visibility_off : Icons.visibility,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.6),
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withValues(alpha: 0.3),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 2,
+                    ),
+                  ),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surface,
+                ),
+              );
+            },
           ),
           const SizedBox(height: 16),
           Align(

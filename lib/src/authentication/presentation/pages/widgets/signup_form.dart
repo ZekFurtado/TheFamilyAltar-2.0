@@ -226,138 +226,132 @@ class _SignupFormState extends State<SignupForm> {
   }
 
   Widget _buildPasswordField() {
-    return BlocProvider(
-      create: (context) => PasswordVisibilityCubit(),
-      child: BlocBuilder<PasswordVisibilityCubit, bool>(
-        builder: (context, hidePass) {
-          return TextFormField(
-            controller: _passwordController,
-            obscureText: hidePass,
-            obscuringCharacter: "•",
-            decoration: InputDecoration(
-              labelText: 'Password',
-              hintText: 'Create a strong password',
-              prefixIcon: Icon(
-                Icons.lock_outline,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              suffixIcon: IconButton(
-                onPressed: () {
-                  context.read<PasswordVisibilityCubit>().toggle();
-                },
-                icon: Icon(
-                  hidePass ? Icons.visibility_off : Icons.visibility,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 2,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-              filled: true,
-              fillColor: Theme.of(context).colorScheme.surface,
+    return BlocBuilder<PasswordVisibilityCubit, bool>(
+      builder: (context, hidePass) {
+        return TextFormField(
+          controller: _passwordController,
+          obscureText: hidePass,
+          obscuringCharacter: "•",
+          decoration: InputDecoration(
+            labelText: 'Password',
+            hintText: 'Create a strong password',
+            prefixIcon: Icon(
+              Icons.lock_outline,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a password';
-              }
-              if (value.length < 6) {
-                return 'Password must be at least 6 characters';
-              }
-              return null;
-            },
-          );
-        },
-      ),
+            suffixIcon: IconButton(
+              onPressed: () {
+                context.read<PasswordVisibilityCubit>().toggle();
+              },
+              icon: Icon(
+                hidePass ? Icons.visibility_off : Icons.visibility,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 2,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surface,
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter a password';
+            }
+            if (value.length < 6) {
+              return 'Password must be at least 6 characters';
+            }
+            return null;
+          },
+        );
+      },
     );
   }
 
   Widget _buildConfirmPasswordField() {
-    return BlocProvider(
-      create: (context) => PasswordVisibilityCubit(),
-      child: BlocBuilder<PasswordVisibilityCubit, bool>(
-        builder: (context, hidePass) {
-          return TextFormField(
-            controller: _confirmPasswordController,
-            obscureText: hidePass,
-            obscuringCharacter: "•",
-            decoration: InputDecoration(
-              labelText: 'Confirm Password',
-              hintText: 'Re-enter your password',
-              prefixIcon: Icon(
-                Icons.lock_outline,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              suffixIcon: IconButton(
-                onPressed: () {
-                  context.read<PasswordVisibilityCubit>().toggle();
-                },
-                icon: Icon(
-                  hidePass ? Icons.visibility_off : Icons.visibility,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 2,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-              filled: true,
-              fillColor: Theme.of(context).colorScheme.surface,
+    return BlocBuilder<PasswordVisibilityCubit, bool>(
+      builder: (context, hidePass) {
+        return TextFormField(
+          controller: _confirmPasswordController,
+          obscureText: hidePass,
+          obscuringCharacter: "•",
+          decoration: InputDecoration(
+            labelText: 'Confirm Password',
+            hintText: 'Re-enter your password',
+            prefixIcon: Icon(
+              Icons.lock_outline,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please confirm your password';
-              }
-              if (value != _passwordController.text) {
-                return 'Passwords do not match';
-              }
-              return null;
-            },
-          );
-        },
-      ),
+            suffixIcon: IconButton(
+              onPressed: () {
+                context.read<PasswordVisibilityCubit>().toggle();
+              },
+              icon: Icon(
+                hidePass ? Icons.visibility_off : Icons.visibility,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 2,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surface,
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please confirm your password';
+            }
+            if (value != _passwordController.text) {
+              return 'Passwords do not match';
+            }
+            return null;
+          },
+        );
+      },
     );
   }
 
