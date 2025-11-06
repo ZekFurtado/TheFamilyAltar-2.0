@@ -32,6 +32,16 @@ import 'package:thefamilyaltar/src/home/domain/usecases/get_reading_by_date.dart
 import 'package:thefamilyaltar/src/home/domain/usecases/get_user_streak.dart';
 import 'package:thefamilyaltar/src/home/domain/usecases/update_user_streak.dart';
 import 'package:thefamilyaltar/src/home/presentation/bloc/home_bloc.dart';
+import 'package:thefamilyaltar/src/notes/data/datasources/notes_remote_data_source.dart';
+import 'package:thefamilyaltar/src/notes/data/repositories/notes_repository_impl.dart';
+import 'package:thefamilyaltar/src/notes/domain/repositories/notes_repository.dart';
+import 'package:thefamilyaltar/src/notes/domain/usecases/get_notes_by_reading.dart';
+import 'package:thefamilyaltar/src/notes/domain/usecases/get_highlights_by_reading.dart';
+import 'package:thefamilyaltar/src/notes/domain/usecases/save_note.dart';
+import 'package:thefamilyaltar/src/notes/domain/usecases/save_highlight.dart';
+import 'package:thefamilyaltar/src/notes/domain/usecases/delete_note.dart';
+import 'package:thefamilyaltar/src/notes/domain/usecases/delete_highlight.dart';
+import 'package:thefamilyaltar/src/notes/presentation/bloc/notes_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -64,6 +74,15 @@ Future<void> init() async {
         getUserStreak: sl(),
         updateUserStreak: sl()))
 
+    /// Notes
+    ..registerFactory(() => NotesBloc(
+        getNotesByReading: sl(),
+        getHighlightsByReading: sl(),
+        saveNote: sl(),
+        saveHighlight: sl(),
+        deleteNote: sl(),
+        deleteHighlight: sl()))
+
     /// USE CASES
 
     /// Authentication
@@ -86,6 +105,14 @@ Future<void> init() async {
     ..registerLazySingleton(() => GetUserStreak(sl()))
     ..registerLazySingleton(() => UpdateUserStreak(sl()))
 
+    /// Notes
+    ..registerLazySingleton(() => GetNotesByReading(sl()))
+    ..registerLazySingleton(() => GetHighlightsByReading(sl()))
+    ..registerLazySingleton(() => SaveNote(sl()))
+    ..registerLazySingleton(() => SaveHighlight(sl()))
+    ..registerLazySingleton(() => DeleteNote(sl()))
+    ..registerLazySingleton(() => DeleteHighlight(sl()))
+
     /// REPOSITORIES
 
     /// Authentication
@@ -99,6 +126,10 @@ Future<void> init() async {
     /// Home
     ..registerLazySingleton<HomeRepository>(
         () => HomeRepositoryImpl(remoteDataSource: sl()))
+
+    /// Notes
+    ..registerLazySingleton<NotesRepository>(
+        () => NotesRepositoryImpl(remoteDataSource: sl()))
 
     /// DATA SOURCES
 
@@ -115,6 +146,10 @@ Future<void> init() async {
     /// Home
     ..registerLazySingleton<HomeRemoteDataSource>(
         () => HomeRemoteDataSourceImpl(firestore: sl()))
+
+    /// Notes
+    ..registerLazySingleton<NotesRemoteDataSource>(
+        () => NotesRemoteDataSourceImpl(firestore: sl()))
 
     /// EXTERNAL DEPENDENCIES
     ..registerLazySingleton(() => sharedPreferences)

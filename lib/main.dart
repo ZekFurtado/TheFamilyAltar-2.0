@@ -3,6 +3,8 @@
 import 'package:thefamilyaltar/core/utils/routes.dart';
 import 'package:thefamilyaltar/core/utils/theme.dart';
 import 'package:thefamilyaltar/src/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:thefamilyaltar/src/authentication/presentation/bloc/auth_cubit.dart';
+import 'package:thefamilyaltar/src/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -13,6 +15,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thefamilyaltar/src/home/presentation/bloc/home_bloc.dart';
+import 'package:thefamilyaltar/src/notes/presentation/bloc/notes_bloc.dart';
 
 import 'core/common/user_provider.dart';
 import 'core/services/injection_container.dart';
@@ -46,8 +49,11 @@ void main() async {
     ],
     child: MultiBlocProvider(
       providers: [
+        BlocProvider(create: (_) => sl<OnboardingBloc>()),
         BlocProvider(create: (context) => sl<AuthenticationBloc>()),
+        BlocProvider(create: (context) => PasswordVisibilityCubit()),
         BlocProvider(create: (context) => sl<HomeBloc>()),
+        BlocProvider(create: (context) => sl<NotesBloc>()),
       ],
       child: const TheFamilyAltarApp(),
     ),
