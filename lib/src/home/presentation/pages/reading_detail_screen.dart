@@ -11,6 +11,7 @@ import '../../../notes/presentation/bloc/notes_state.dart';
 import '../../../notes/presentation/widgets/highlightable_text.dart';
 import '../../../notes/presentation/widgets/notes_bottom_sheet.dart';
 import '../../../notes/presentation/widgets/notes_list.dart';
+import '../../../bible/presentation/widgets/clickable_scripture_text.dart';
 import '../../domain/entities/daily_reading.dart';
 import '../bloc/home_bloc.dart';
 
@@ -91,7 +92,13 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () => _showNotesBottomSheet(context),
+            onPressed: () {
+              if (widget.userId == null) {
+                _showLoginRequiredDialog(context);
+              } else {
+                _showNotesBottomSheet(context);
+              }
+            },
             icon: Icon(
               Icons.note_add,
               color: Theme.of(context).colorScheme.primary,
@@ -194,16 +201,34 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
                               .withValues(alpha: 0.2),
                         ),
                       ),
-                      child: Text(
-                        widget.reading.scriptureText,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(
-                              fontStyle: FontStyle.italic,
-                              color: Theme.of(context).colorScheme.onSurface,
-                              height: 1.5,
-                            ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Make the scripture reference clickable
+                          ClickableScriptureText(
+                            text: widget.reading.scripture,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          // Keep scripture text as regular text with potential scripture references clickable
+                          ClickableScriptureText(
+                            text: widget.reading.scriptureText,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                  height: 1.5,
+                                ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -222,12 +247,11 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
                           .toList()
                       : <TextHighlight>[];
 
-                  return _buildHighlightableSection(
+                  return _buildClickableSection(
                     context: context,
                     title: "Today's Message",
                     content: widget.reading.sermonContent,
                     icon: Icons.auto_stories,
-                    highlights: highlights,
                   );
                 },
               ),
@@ -244,7 +268,7 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
                           .toList()
                       : <TextHighlight>[];
 
-                  return _buildHighlightableSection(
+                  return _buildScriptureSection(
                     context: context,
                     title: "Scriptures for Today",
                     content: widget.reading.scripturesForDay.join('\n\n'),
@@ -254,7 +278,7 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
                 },
               ),
               const SizedBox(height: 24),
-              _buildSection(
+              _buildClickableSection(
                 context: context,
                 title: "Sermon Reference",
                 content: widget.reading.sermonReference,
@@ -263,6 +287,10 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
               const SizedBox(height: 24),
               BlocBuilder<NotesBloc, NotesState>(
                 builder: (context, notesState) {
+                  if (widget.userId == null) {
+                    return _buildLoginPromptSection(context);
+                  }
+                  
                   print("notesState in BlocBuilder:");
                   print(notesState);
                   if (notesState is NotesLoading) {
@@ -370,6 +398,55 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
     );
   }
 
+  Widget _buildClickableSection({
+    required BuildContext context,
+    required String title,
+    required String content,
+    required IconData icon,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                color: Theme.of(context).colorScheme.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ClickableScriptureText(
+            text: content,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  height: 1.6,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildHighlightableSection({
     required BuildContext context,
     required String title,
@@ -416,13 +493,117 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
                 ),
             highlights: highlights,
             onTextSelected: (selectedText, startIndex, endIndex) {
-              _showNotesBottomSheet(
-                context,
-                selectedText: selectedText,
-                startPosition: startIndex,
-                endPosition: endIndex,
-              );
+              if (widget.userId == null) {
+                _showLoginRequiredDialog(context);
+              } else {
+                _showNotesBottomSheet(
+                  context,
+                  selectedText: selectedText,
+                  startPosition: startIndex,
+                  endPosition: endIndex,
+                );
+              }
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHighlightableClickableSection({
+    required BuildContext context,
+    required String title,
+    required String content,
+    required IconData icon,
+    required List<TextHighlight> highlights,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                color: Theme.of(context).colorScheme.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ClickableScriptureText(
+            text: content,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  height: 1.6,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScriptureSection({
+    required BuildContext context,
+    required String title,
+    required String content,
+    required IconData icon,
+    required List<TextHighlight> highlights,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                color: Theme.of(context).colorScheme.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ClickableScriptureText(
+            text: content,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  height: 1.6,
+                ),
           ),
         ],
       ),
@@ -498,6 +679,97 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
     );
   }
 
+  Widget _buildLoginPromptSection(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.notes_outlined,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'My Notes',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.account_circle_outlined,
+                  size: 48,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Sign in to save notes and highlights',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Create highlights, save personal reflections, and sync your notes across all devices.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Sign In',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showNotesBottomSheet(
     BuildContext context, {
     String? selectedText,
@@ -515,6 +787,41 @@ class _ReadingDetailScreenState extends State<ReadingDetailScreen> {
         startPosition: startPosition,
         endPosition: endPosition,
       ),
+    );
+  }
+
+  void _showLoginRequiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.account_circle_outlined, size: 24),
+              SizedBox(width: 8),
+              Text('Sign In Required'),
+            ],
+          ),
+          content: const Text(
+            'To save notes and highlights, please sign in to your account. Your notes will be synced across all your devices.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushNamed(context, '/login');
+              },
+              child: const Text('Sign In'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -114,58 +114,42 @@ class _RouteResolverState extends State<RouteResolver> {
   }
 
   Future<void> _initializeRoute() async {
+    // Check for existing user session silently in the background
     final bloc = context.read<AuthenticationBloc>();
-    
-    // Check for user session
     bloc.add(const GetUserSessionEvent());
+    
+    // Check if this is the first time user
+    await _checkFirstTimeAndNavigate();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthenticationBloc, AuthenticationState>(
-      listener: (context, state) async {
-        if (state is Authenticated) {
-          // User is logged in, update UserProvider and navigate to home
-          print('state.visitor');
-          print(state.visitor);
-          if(state.visitor != null){
-            // Update UserProvider with authenticated user
-            context.read<UserProvider>().user = state.visitor;
-            await _navigateToHome();
-          }
-          else {
-            await _checkFirstTimeAndNavigate(context);
-          }
-        } else if (state is AuthenticationError || state is SignedOut) {
+    return BlocListener<AuthenticationBloc, AuthenticationState>(
+      listener: (context, state) {
+        if (state is Authenticated && state.visitor != null) {
+          // Silently update UserProvider with authenticated user
+          context.read<UserProvider>().user = state.visitor;
+        } else {
           // Clear UserProvider when not authenticated
           context.read<UserProvider>().user = null;
-          // Check if first time user for onboarding
-          await _checkFirstTimeAndNavigate(context);
         }
       },
-      builder: (context, state) {
-        // Show loading screen while determining route
-        return const Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading...'),
-              ],
-            ),
+      child: const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Loading...'),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  Future<void> _navigateToHome() async {
-    Navigator.of(context).pushReplacementNamed('/home');
-  }
-
-  Future<void> _checkFirstTimeAndNavigate(context) async {
+  Future<void> _checkFirstTimeAndNavigate() async {
     final prefs = await SharedPreferences.getInstance();
     final isFirstTime = prefs.getBool('is_first_time') ?? true;
 
@@ -175,8 +159,8 @@ class _RouteResolverState extends State<RouteResolver> {
       // Navigate to onboarding
       Navigator.of(context).pushReplacementNamed('/onboarding');
     } else {
-      // Navigate to login
-      Navigator.of(context).pushReplacementNamed('/login');
+      // Navigate directly to home instead of login
+      Navigator.of(context).pushReplacementNamed('/home');
     }
   }
 }
