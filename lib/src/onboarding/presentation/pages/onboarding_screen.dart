@@ -48,7 +48,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Column(
           children: [
             // Top bar with Skip button
-            Padding(
+            /*Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -69,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ],
               ),
-            ),
+            ),*/
             Expanded(
               flex: 8,
               child: PageView.builder(
@@ -132,7 +132,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ? BlocConsumer<OnboardingBloc, OnboardingState>(
                                   listener: (context, state) {
                                     if (state is UserCached) {
-                                      Navigator.of(context).pushReplacementNamed('/login');
+                                      Navigator.of(context).pushReplacementNamed('/home');
                                     } else if (state is OnboardingError) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text(state.message)),

@@ -42,6 +42,14 @@ import 'package:thefamilyaltar/src/notes/domain/usecases/save_highlight.dart';
 import 'package:thefamilyaltar/src/notes/domain/usecases/delete_note.dart';
 import 'package:thefamilyaltar/src/notes/domain/usecases/delete_highlight.dart';
 import 'package:thefamilyaltar/src/notes/presentation/bloc/notes_bloc.dart';
+import 'package:thefamilyaltar/src/bible/data/datasources/bible_local_data_source.dart';
+import 'package:thefamilyaltar/src/bible/data/repositories/bible_repository_impl.dart';
+import 'package:thefamilyaltar/src/bible/domain/repositories/bible_repository.dart';
+import 'package:thefamilyaltar/src/bible/domain/usecases/get_available_versions.dart';
+import 'package:thefamilyaltar/src/bible/domain/usecases/get_bible_books.dart';
+import 'package:thefamilyaltar/src/bible/domain/usecases/get_bible_chapter.dart';
+import 'package:thefamilyaltar/src/bible/domain/usecases/get_scripture_verses.dart';
+import 'package:thefamilyaltar/src/bible/presentation/bloc/bible_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -83,6 +91,13 @@ Future<void> init() async {
         deleteNote: sl(),
         deleteHighlight: sl()))
 
+    /// Bible
+    ..registerFactory(() => BibleBloc(
+        getAvailableVersions: sl(),
+        getBibleBooks: sl(),
+        getBibleChapter: sl(),
+        getScriptureVerses: sl()))
+
     /// USE CASES
 
     /// Authentication
@@ -113,6 +128,12 @@ Future<void> init() async {
     ..registerLazySingleton(() => DeleteNote(sl()))
     ..registerLazySingleton(() => DeleteHighlight(sl()))
 
+    /// Bible
+    ..registerLazySingleton(() => GetAvailableVersions(sl()))
+    ..registerLazySingleton(() => GetBibleBooks(sl()))
+    ..registerLazySingleton(() => GetBibleChapter(sl()))
+    ..registerLazySingleton(() => GetScriptureVerses(sl()))
+
     /// REPOSITORIES
 
     /// Authentication
@@ -130,6 +151,10 @@ Future<void> init() async {
     /// Notes
     ..registerLazySingleton<NotesRepository>(
         () => NotesRepositoryImpl(remoteDataSource: sl()))
+
+    /// Bible
+    ..registerLazySingleton<BibleRepository>(
+        () => BibleRepositoryImpl(localDataSource: sl()))
 
     /// DATA SOURCES
 
@@ -150,6 +175,10 @@ Future<void> init() async {
     /// Notes
     ..registerLazySingleton<NotesRemoteDataSource>(
         () => NotesRemoteDataSourceImpl(firestore: sl()))
+
+    /// Bible
+    ..registerLazySingleton<BibleLocalDataSource>(
+        () => BibleLocalDataSourceImpl(sl()))
 
     /// EXTERNAL DEPENDENCIES
     ..registerLazySingleton(() => sharedPreferences)

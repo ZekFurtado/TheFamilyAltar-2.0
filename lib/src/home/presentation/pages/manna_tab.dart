@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:thefamilyaltar/core/res/media_res.dart';
+import 'package:thefamilyaltar/core/common/user_provider.dart';
 
 import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../../domain/entities/daily_reading.dart';
@@ -58,6 +60,33 @@ class _MannaTabState extends State<MannaTab> {
     }
   }
 
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Sign Out'),
+          content: const Text('Are you sure you want to sign out?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.read<AuthenticationBloc>().add(const SignOutUserEvent());
+              },
+              child: const Text('Sign Out'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,14 +106,78 @@ class _MannaTabState extends State<MannaTab> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/settings');
+          Consumer<UserProvider>(
+            builder: (context, userProvider, _) {
+              final isLoggedIn = userProvider.user != null;
+              return PopupMenuButton<String>(
+                icon: Icon(
+                  isLoggedIn ? Icons.account_circle : Icons.person_outline,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                onSelected: (value) {
+                  switch (value) {
+                    case 'login':
+                      Navigator.pushNamed(context, '/login');
+                      break;
+                    case 'settings':
+                      Navigator.pushNamed(context, '/settings');
+                      break;
+                    case 'logout':
+                      _showLogoutDialog(context);
+                      break;
+                  }
+                },
+                itemBuilder: (BuildContext context) {
+                  if (isLoggedIn) {
+                    return [
+                      PopupMenuItem<String>(
+                        value: 'settings',
+                        child: Row(
+                          children: [
+                            Icon(Icons.settings, size: 20),
+                            SizedBox(width: 12),
+                            Text('Settings'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'logout',
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout, size: 20),
+                            SizedBox(width: 12),
+                            Text('Sign Out'),
+                          ],
+                        ),
+                      ),
+                    ];
+                  } else {
+                    return [
+                      PopupMenuItem<String>(
+                        value: 'login',
+                        child: Row(
+                          children: [
+                            Icon(Icons.login, size: 20),
+                            SizedBox(width: 12),
+                            Text('Sign In'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'settings',
+                        child: Row(
+                          children: [
+                            Icon(Icons.settings, size: 20),
+                            SizedBox(width: 12),
+                            Text('Settings'),
+                          ],
+                        ),
+                      ),
+                    ];
+                  }
+                },
+              );
             },
-            icon: Icon(
-              Icons.settings,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
           ),
         ],
       ),
@@ -182,6 +275,67 @@ class _MannaTabState extends State<MannaTab> {
                   child: Column(
                     children: [
                       const SizedBox(height: 8),
+                      // Show login encouragement banner for non-authenticated users
+                      if (currentUserId == null)
+                        Container(
+                          margin: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primaryContainer,
+                                Theme.of(context).colorScheme.secondaryContainer,
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.account_circle_outlined,
+                                size: 32,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Sign in to track your reading streaks',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Save notes, build reading habits, and track your spiritual journey',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, '/login');
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Theme.of(context).colorScheme.primary,
+                                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Sign In',
+                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       if (currentReading != null)
                         Column(
                           children: [
