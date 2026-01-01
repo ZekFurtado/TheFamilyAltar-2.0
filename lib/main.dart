@@ -2,8 +2,8 @@
 
 import 'package:thefamilyaltar/core/utils/routes.dart';
 import 'package:thefamilyaltar/core/utils/theme.dart';
-import 'package:thefamilyaltar/src/authentication/presentation/bloc/authentication_bloc.dart';
-import 'package:thefamilyaltar/src/authentication/presentation/bloc/auth_cubit.dart';
+// import 'package:thefamilyaltar/src/authentication/presentation/bloc/authentication_bloc.dart';
+// import 'package:thefamilyaltar/src/authentication/presentation/bloc/auth_cubit.dart';
 import 'package:thefamilyaltar/src/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -50,8 +50,8 @@ void main() async {
     child: MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<OnboardingBloc>()),
-        BlocProvider(create: (context) => sl<AuthenticationBloc>()),
-        BlocProvider(create: (context) => PasswordVisibilityCubit()),
+        // BlocProvider(create: (context) => sl<AuthenticationBloc>()),
+        // BlocProvider(create: (context) => PasswordVisibilityCubit()),
         BlocProvider(create: (context) => sl<HomeBloc>()),
         BlocProvider(create: (context) => sl<NotesBloc>()),
       ],
@@ -115,8 +115,8 @@ class _RouteResolverState extends State<RouteResolver> {
 
   Future<void> _initializeRoute() async {
     // Check for existing user session silently in the background
-    final bloc = context.read<AuthenticationBloc>();
-    bloc.add(const GetUserSessionEvent());
+    // final bloc = context.read<AuthenticationBloc>();
+    // bloc.add(const GetUserSessionEvent());
     
     // Check if this is the first time user
     await _checkFirstTimeAndNavigate();
@@ -124,26 +124,38 @@ class _RouteResolverState extends State<RouteResolver> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthenticationBloc, AuthenticationState>(
-      listener: (context, state) {
-        if (state is Authenticated && state.visitor != null) {
-          // Silently update UserProvider with authenticated user
-          context.read<UserProvider>().user = state.visitor;
-        } else {
-          // Clear UserProvider when not authenticated
-          context.read<UserProvider>().user = null;
-        }
-      },
-      child: const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Loading...'),
-            ],
-          ),
+    // return BlocListener<AuthenticationBloc, AuthenticationState>(
+    //   listener: (context, state) {
+    //     if (state is Authenticated && state.visitor != null) {
+    //       // Silently update UserProvider with authenticated user
+    //       context.read<UserProvider>().user = state.visitor;
+    //     } else {
+    //       // Clear UserProvider when not authenticated
+    //       context.read<UserProvider>().user = null;
+    //     }
+    //   },
+    //   child: const Scaffold(
+    //     body: Center(
+    //       child: Column(
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         children: [
+    //           CircularProgressIndicator(),
+    //           SizedBox(height: 16),
+    //           Text('Loading...'),
+    //         ],
+    //       ),
+    //     ),
+    //   ),
+    // );
+    return const Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Loading...'),
+          ],
         ),
       ),
     );

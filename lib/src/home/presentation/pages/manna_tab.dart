@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:thefamilyaltar/core/res/media_res.dart';
 import 'package:thefamilyaltar/core/common/user_provider.dart';
 
-import '../../../authentication/presentation/bloc/authentication_bloc.dart';
+// import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 import '../../domain/entities/daily_reading.dart';
 import '../../domain/entities/user_streak.dart';
 import '../bloc/home_bloc.dart';
@@ -39,25 +39,25 @@ class _MannaTabState extends State<MannaTab> {
   }
 
   void _loadInitialData() {
-    final authState = context.read<AuthenticationBloc>().state;
-    log('_loadInitialData: authState = ${authState.runtimeType}');
+    // final authState = context.read<AuthenticationBloc>().state;
+    // log('_loadInitialData: authState = ${authState.runtimeType}');
     
     context.read<HomeBloc>().add(const LoadTodaysReading());
     
-    if (authState is Authenticated && authState.visitor != null && authState.visitor!.uid != null) {
-      log('_loadInitialData: Setting currentUserId to ${authState.visitor!.uid}');
-      setState(() {
-        currentUserId = authState.visitor!.uid;
-      });
-      context.read<HomeBloc>().add(LoadUserStreak(userId: currentUserId!));
-    } else {
-      log('_loadInitialData: User not authenticated or visitor is null');
-      // Clear user data if not authenticated
-      setState(() {
-        currentUserId = null;
-        userStreak = null;
-      });
-    }
+    // if (authState is Authenticated && authState.visitor != null && authState.visitor!.uid != null) {
+    //   log('_loadInitialData: Setting currentUserId to ${authState.visitor!.uid}');
+    //   setState(() {
+    //     currentUserId = authState.visitor!.uid;
+    //   });
+    //   context.read<HomeBloc>().add(LoadUserStreak(userId: currentUserId!));
+    // } else {
+    //   log('_loadInitialData: User not authenticated or visitor is null');
+    //   // Clear user data if not authenticated
+    //   setState(() {
+    //     currentUserId = null;
+    //     userStreak = null;
+    //   });
+    // }
   }
 
   void _showLogoutDialog(BuildContext context) {
@@ -77,7 +77,7 @@ class _MannaTabState extends State<MannaTab> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.read<AuthenticationBloc>().add(const SignOutUserEvent());
+                // context.read<AuthenticationBloc>().add(const SignOutUserEvent());
               },
               child: const Text('Sign Out'),
             ),
@@ -117,7 +117,7 @@ class _MannaTabState extends State<MannaTab> {
                 onSelected: (value) {
                   switch (value) {
                     case 'login':
-                      Navigator.pushNamed(context, '/login');
+                      // Navigator.pushNamed(context, '/login');
                       break;
                     case 'settings':
                       Navigator.pushNamed(context, '/settings');
@@ -153,16 +153,16 @@ class _MannaTabState extends State<MannaTab> {
                     ];
                   } else {
                     return [
-                      PopupMenuItem<String>(
-                        value: 'login',
-                        child: Row(
-                          children: [
-                            Icon(Icons.login, size: 20),
-                            SizedBox(width: 12),
-                            Text('Sign In'),
-                          ],
-                        ),
-                      ),
+                      // PopupMenuItem<String>(
+                      //   value: 'login',
+                      //   child: Row(
+                      //     children: [
+                      //       Icon(Icons.login, size: 20),
+                      //       SizedBox(width: 12),
+                      //       Text('Sign In'),
+                      //     ],
+                      //   ),
+                      // ),
                       PopupMenuItem<String>(
                         value: 'settings',
                         child: Row(
@@ -220,33 +220,33 @@ class _MannaTabState extends State<MannaTab> {
               }
             },
           ),
-          BlocListener<AuthenticationBloc, AuthenticationState>(
-            listener: (context, state) {
-              log('AuthenticationBloc state changed: ${state.runtimeType}');
-              
-              if (state is Authenticated && state.visitor != null && state.visitor!.uid != null) {
-                // User is authenticated, check if we need to update currentUserId
-                final newUserId = state.visitor!.uid;
-                log('User authenticated with UID: $newUserId, current UID: $currentUserId');
-                
-                if (currentUserId != newUserId) {
-                  log('Updating currentUserId to $newUserId');
-                  setState(() {
-                    currentUserId = newUserId;
-                  });
-                  // Load user streak data whenever user ID changes
-                  context.read<HomeBloc>().add(LoadUserStreak(userId: currentUserId!));
-                }
-              } else if (state is SignedOut) {
-                log('User signed out, clearing currentUserId');
-                // User signed out, clear the current user ID
-                setState(() {
-                  currentUserId = null;
-                  userStreak = null;
-                });
-              }
-            },
-          ),
+          // BlocListener<AuthenticationBloc, AuthenticationState>(
+          //   listener: (context, state) {
+          //     log('AuthenticationBloc state changed: ${state.runtimeType}');
+          //     
+          //     if (state is Authenticated && state.visitor != null && state.visitor!.uid != null) {
+          //       // User is authenticated, check if we need to update currentUserId
+          //       final newUserId = state.visitor!.uid;
+          //       log('User authenticated with UID: $newUserId, current UID: $currentUserId');
+          //       
+          //       if (currentUserId != newUserId) {
+          //         log('Updating currentUserId to $newUserId');
+          //         setState(() {
+          //           currentUserId = newUserId;
+          //         });
+          //         // Load user streak data whenever user ID changes
+          //         context.read<HomeBloc>().add(LoadUserStreak(userId: currentUserId!));
+          //       }
+          //     } else if (state is SignedOut) {
+          //       log('User signed out, clearing currentUserId');
+          //       // User signed out, clear the current user ID
+          //       setState(() {
+          //         currentUserId = null;
+          //         userStreak = null;
+          //       });
+          //     }
+          //   },
+          // ),
         ],
         child: RefreshIndicator(
           onRefresh: () async {
@@ -276,66 +276,66 @@ class _MannaTabState extends State<MannaTab> {
                     children: [
                       const SizedBox(height: 8),
                       // Show login encouragement banner for non-authenticated users
-                      if (currentUserId == null)
-                        Container(
-                          margin: const EdgeInsets.all(16),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).colorScheme.primaryContainer,
-                                Theme.of(context).colorScheme.secondaryContainer,
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.account_circle_outlined,
-                                size: 32,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Sign in to track your reading streaks',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Save notes, build reading habits, and track your spiritual journey',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 12),
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, '/login');
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Theme.of(context).colorScheme.primary,
-                                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Sign In',
-                                    style: TextStyle(fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      // if (currentUserId == null)
+                      //   Container(
+                      //     margin: const EdgeInsets.all(16),
+                      //     padding: const EdgeInsets.all(16),
+                      //     decoration: BoxDecoration(
+                      //       gradient: LinearGradient(
+                      //         colors: [
+                      //           Theme.of(context).colorScheme.primaryContainer,
+                      //           Theme.of(context).colorScheme.secondaryContainer,
+                      //         ],
+                      //       ),
+                      //       borderRadius: BorderRadius.circular(12),
+                      //     ),
+                      //     child: Column(
+                      //       children: [
+                      //         Icon(
+                      //           Icons.account_circle_outlined,
+                      //           size: 32,
+                      //           color: Theme.of(context).colorScheme.primary,
+                      //         ),
+                      //         const SizedBox(height: 8),
+                      //         Text(
+                      //           'Sign in to track your reading streaks',
+                      //           style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      //             fontWeight: FontWeight.w600,
+                      //           ),
+                      //           textAlign: TextAlign.center,
+                      //         ),
+                      //         const SizedBox(height: 4),
+                      //         Text(
+                      //           'Save notes, build reading habits, and track your spiritual journey',
+                      //           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      //             color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      //           ),
+                      //           textAlign: TextAlign.center,
+                      //         ),
+                      //         const SizedBox(height: 12),
+                      //         SizedBox(
+                      //           width: double.infinity,
+                      //           child: ElevatedButton(
+                      //             onPressed: () {
+                      //               // Navigator.pushNamed(context, '/login');
+                      //             },
+                      //             style: ElevatedButton.styleFrom(
+                      //               backgroundColor: Theme.of(context).colorScheme.primary,
+                      //               foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      //               padding: const EdgeInsets.symmetric(vertical: 12),
+                      //               shape: RoundedRectangleBorder(
+                      //                 borderRadius: BorderRadius.circular(8),
+                      //               ),
+                      //             ),
+                      //             child: const Text(
+                      //               'Sign In',
+                      //               style: TextStyle(fontWeight: FontWeight.w600),
+                      //             ),
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
                       if (currentReading != null)
                         Column(
                           children: [
