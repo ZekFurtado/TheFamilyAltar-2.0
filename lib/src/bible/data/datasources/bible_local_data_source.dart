@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/bible_book_model.dart';
 import '../models/bible_chapter_model.dart';
@@ -39,6 +40,9 @@ class BibleLocalDataSourceImpl implements BibleLocalDataSource {
 
   static const String _selectedVersionKey = 'selected_bible_version';
   static const String _downloadedVersionsKey = 'downloaded_bible_versions';
+  
+  // Cache for Bible JSON data to avoid repeated asset loading
+  static Map<String, dynamic>? _cachedBibleData;
 
   @override
   Future<List<BibleVersionModel>> getAvailableVersions() async {
@@ -295,37 +299,86 @@ class BibleLocalDataSourceImpl implements BibleLocalDataSource {
     }
   }
 
+
   Future<List<BibleVerseModel>> _getChapterVerses(String book, int chapter, String versionId) async {
-    // For demo purposes, return sample verses
-    // In a real implementation, you would read from a local database or JSON files
-    
-    if (book.toLowerCase() == 'john' && chapter == 3) {
-      return [
-        BibleVerseModel(book: 'John', chapter: 3, verse: 1, text: 'There was a man of the Pharisees, named Nicodemus, a ruler of the Jews:'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 2, text: 'The same came to Jesus by night, and said unto him, Rabbi, we know that thou art a teacher come from God: for no man can do these miracles that thou doest, except God be with him.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 3, text: 'Jesus answered and said unto him, Verily, verily, I say unto thee, Except a man be born again, he cannot see the kingdom of God.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 4, text: 'Nicodemus saith unto him, How can a man be born when he is old? can he enter the second time into his mother\'s womb, and be born?'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 5, text: 'Jesus answered, Verily, verily, I say unto thee, Except a man be born of water and of the Spirit, he cannot enter into the kingdom of God.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 6, text: 'That which is born of the flesh is flesh; and that which is born of the Spirit is spirit.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 7, text: 'Marvel not that I said unto thee, Ye must be born again.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 8, text: 'The wind bloweth where it listeth, and thou hearest the sound thereof, but canst not tell whence it cometh, and whither it goeth: so is every one that is born of the Spirit.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 9, text: 'Nicodemus answered and said unto him, How can these things be?'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 10, text: 'Jesus answered and said unto him, Art thou a master of Israel, and knowest not these things?'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 11, text: 'Verily, verily, I say unto thee, We speak that we do know, and testify that we have seen; and ye receive not our witness.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 12, text: 'If I have told you earthly things, and ye believe not, how shall ye believe, if I tell you of heavenly things?'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 13, text: 'And no man hath ascended up to heaven, but he that came down from heaven, even the Son of man which is in heaven.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 14, text: 'And as Moses lifted up the serpent in the wilderness, even so must the Son of man be lifted up:'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 15, text: 'That whosoever believeth in him should not perish, but have eternal life.'),
-        const BibleVerseModel(book: 'John', chapter: 3, verse: 16, text: 'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 17, text: 'For God sent not his Son into the world to condemn the world; but that the world through him might be saved.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 18, text: 'He that believeth on him is not condemned: but he that believeth not is condemned already, because he hath not believed in the name of the only begotten Son of God.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 19, text: 'And this is the condemnation, that light is come into the world, and men loved darkness rather than light, because their deeds were evil.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 20, text: 'For every one that doeth evil hateth the light, neither cometh to the light, lest his deeds should be reproved.'),
-        BibleVerseModel(book: 'John', chapter: 3, verse: 21, text: 'But he that doeth truth cometh to the light, that his deeds may be made manifest, that they are wrought in God.'),
-      ];
+    try {
+      // Load Bible data if not cached
+      if (_cachedBibleData == null) {
+        await _loadBibleData();
+      }
+      
+      if (_cachedBibleData == null) {
+        throw Exception('Failed to load Bible data');
+      }
+      
+      // Find the book in the JSON data
+      final books = _cachedBibleData!['books'] as List<dynamic>?;
+      if (books == null) {
+        throw Exception('No books found in Bible data');
+      }
+      
+      final bookData = books.firstWhere(
+        (b) => (b['name'] as String).toLowerCase() == book.toLowerCase(),
+        orElse: () => null,
+      );
+      
+      if (bookData == null) {
+        // Fallback to sample verses for books not in JSON
+        return _generateSampleVerses(book, chapter);
+      }
+      
+      // Find the chapter in the book
+      final chapters = bookData['chapters'] as List<dynamic>?;
+      if (chapters == null) {
+        return _generateSampleVerses(book, chapter);
+      }
+      
+      final chapterData = chapters.firstWhere(
+        (c) => (c['chapter'] as int) == chapter,
+        orElse: () => null,
+      );
+      
+      if (chapterData == null) {
+        return _generateSampleVerses(book, chapter);
+      }
+      
+      // Convert verses to BibleVerseModel
+      final verses = chapterData['verses'] as List<dynamic>?;
+      if (verses == null) {
+        return _generateSampleVerses(book, chapter);
+      }
+      
+      return verses
+          .asMap()
+          .entries
+          .map((entry) => BibleVerseModel(
+                book: book,
+                chapter: chapter,
+                verse: entry.key + 1,
+                text: entry.value as String,
+              ))
+          .toList();
+      
+    } catch (e) {
+      log('Error loading verses from JSON: $e');
+      // Fallback to sample verses
+      return _generateSampleVerses(book, chapter);
     }
-    
-    // Return sample verses for other books/chapters
+  }
+  
+  Future<void> _loadBibleData() async {
+    try {
+      final jsonString = await rootBundle.loadString('assets/kjv_bible.json');
+      _cachedBibleData = jsonDecode(jsonString) as Map<String, dynamic>;
+      log('Successfully loaded Bible data with ${_cachedBibleData!['books']?.length ?? 0} books');
+    } catch (e) {
+      log('Error loading Bible JSON: $e');
+      _cachedBibleData = null;
+    }
+  }
+  
+  List<BibleVerseModel> _generateSampleVerses(String book, int chapter) {
+    // Return sample verses for chapters not available in JSON
     return List.generate(
       10, // Generate 10 sample verses
       (index) => BibleVerseModel(

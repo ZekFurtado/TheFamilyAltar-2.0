@@ -55,7 +55,7 @@ class _ReadingCalendarState extends State<ReadingCalendar> {
           ),
           TableCalendar<DateTime>(
             firstDay: DateTime.utc(2024, 1, 1),
-            lastDay: DateTime.utc(2025, 12, 31),
+            lastDay: DateTime.utc(2027, 12, 31),
             focusedDay: widget.selectedDay ?? DateTime.now(),
             selectedDayPredicate: (day) {
               return widget.selectedDay != null && isSameDay(widget.selectedDay!, day);

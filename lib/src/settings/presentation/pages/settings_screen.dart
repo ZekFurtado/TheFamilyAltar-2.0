@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../authentication/presentation/bloc/authentication_bloc.dart';
+// import '../../../authentication/presentation/bloc/authentication_bloc.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -220,9 +220,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              context.read<AuthenticationBloc>().add(const SignOutUserEvent());
+              // context.read<AuthenticationBloc>().add(const SignOutUserEvent());
               Navigator.of(context).pushNamedAndRemoveUntil(
-                '/login',
+                '/home',
                 (route) => false,
               );
             },
@@ -259,9 +259,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              context.read<AuthenticationBloc>().add(const DeleteAccountEvent());
+              // context.read<AuthenticationBloc>().add(const DeleteAccountEvent());
               Navigator.of(context).pushNamedAndRemoveUntil(
-                '/login',
+                '/home',
                 (route) => false,
               );
             },
@@ -289,41 +289,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthenticationBloc, AuthenticationState>(
-      listener: (context, state) {
-        if (state is DeletingAccount) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => const AlertDialog(
-              content: Row(
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(width: 20),
-                  Text('Deleting account...'),
-                ],
-              ),
-            ),
-          );
-        } else if (state is AccountDeleted) {
-          Navigator.of(context).pop(); // Close loading dialog
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Account deleted successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else if (state is AuthenticationError) {
-          Navigator.of(context).pop(); // Close any loading dialogs
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${state.message}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      },
-      child: Scaffold(
+    // return BlocListener<AuthenticationBloc, AuthenticationState>(
+    //   listener: (context, state) {
+    //     if (state is DeletingAccount) {
+    //       showDialog(
+    //         context: context,
+    //         barrierDismissible: false,
+    //         builder: (context) => const AlertDialog(
+    //           content: Row(
+    //             children: [
+    //               CircularProgressIndicator(),
+    //               SizedBox(width: 20),
+    //               Text('Deleting account...'),
+    //             ],
+    //           ),
+    //         ),
+    //       );
+    //     } else if (state is AccountDeleted) {
+    //       Navigator.of(context).pop(); // Close loading dialog
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         const SnackBar(
+    //           content: Text('Account deleted successfully'),
+    //           backgroundColor: Colors.green,
+    //         ),
+    //       );
+    //     } else if (state is AuthenticationError) {
+    //       Navigator.of(context).pop(); // Close any loading dialogs
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(
+    //           content: Text('Error: ${state.message}'),
+    //           backgroundColor: Colors.red,
+    //         ),
+    //       );
+    //     }
+    //   },
+    //   child: Scaffold(
+    return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: Text(
@@ -503,7 +504,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
             ),
-    ),
     );
   }
 
